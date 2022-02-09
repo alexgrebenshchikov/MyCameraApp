@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">MyCamera App</string>
+    <string name="capture_button_alt">capture button</string>
+    <string name="gallery_button_alt">gallery button</string>
+    <string name="switch_text_template">switch text template</string>
+    <string name="counter_text">Photos taken: %d</string>
+    <string name="positive_button_text">OK</string>
+    <string name="negative_button_text">Cancel</string>
+    <string name="template_dialog_title">"Enter filename template"</string>
+    <string name="delete_button_alt">delete button</string>
+    <string name="back_button_alt">back button</string>
+    <string name="view_pager">view pager</string>
+    <string name="delete_title">Delete file</string>
+    <string name="delete_dialog">Are you sure?</string>
+    <string name="empty_template_message">Empty template!</string>
+    <string name="same_template_message">New template equals to old one!</string>
+</resources>
