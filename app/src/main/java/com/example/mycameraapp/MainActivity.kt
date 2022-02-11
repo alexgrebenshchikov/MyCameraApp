@@ -14,7 +14,6 @@ class MainActivity : AppCompatActivity() {
 
 
     companion object {
-
         fun getOutputDirectory(context: Context): File {
             val appContext = context.applicationContext
             val mediaDir = context.externalMediaDirs.firstOrNull()?.let {

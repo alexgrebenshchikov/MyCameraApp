@@ -137,6 +137,21 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         editor?.apply()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        cameraExecutor.shutdown()
+        displayManager.unregisterDisplayListener(displayListener)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!PermissionFragment.hasPermissions(requireContext())) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
+                CameraFragmentDirections.actionCameraFragmentToPermissionFragment()
+            )
+        }
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         templateDialog?.isShowing?.let {
@@ -149,7 +164,6 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-
         bindPreviewCapture()
     }
 
@@ -176,10 +190,8 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     private fun bindPreviewCapture() {
         val metrics = windowManager.getCurrentWindowMetrics().bounds
-        Log.d("screem", "Screen metrics: ${metrics.width()} x ${metrics.height()}")
 
         val screenAspectRatio = aspectRatio(metrics.width(), metrics.height())
-        Log.d("screen", "Preview aspect ratio: $screenAspectRatio")
 
         val rotation = fragmentCameraBinding.viewFinder.display.rotation
 
@@ -214,7 +226,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
             preview?.setSurfaceProvider(fragmentCameraBinding.viewFinder.surfaceProvider)
         } catch (exc: Exception) {
-            Log.e(TAG, "Use case binding failed", exc)
+            Log.e(TAG, "Binding failed", exc)
         }
     }
 
@@ -233,7 +245,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
         lifecycleScope.launch(Dispatchers.IO) {
             outputDirectory.listFiles { file ->
-                arrayOf("JPG").contains(file.extension.toUpperCase(Locale.ROOT))
+                EXTENSION_WHITELIST.contains(file.extension.toUpperCase(Locale.ROOT))
             }?.maxOrNull()?.let {
                 setGalleryThumbnail(Uri.fromFile(it))
             }
@@ -266,7 +278,6 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
                         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                             val savedUri = output.savedUri ?: Uri.fromFile(photoFile)
-                            Log.d(TAG, "Photo capture succeeded: $savedUri")
                             photoCounter += 1
                             viewLifecycleOwner.lifecycleScope.launch {
                                 cameraUiBinding?.counterTextView?.text =
@@ -275,13 +286,6 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                 setGalleryThumbnail(savedUri)
-                            }
-
-
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                requireActivity().sendBroadcast(
-                                    Intent(android.hardware.Camera.ACTION_NEW_PICTURE, savedUri)
-                                )
                             }
 
                             val mimeType = MimeTypeMap.getSingleton()
@@ -345,14 +349,16 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
                 setOnShowListener {
                     val button: Button = getButton(AlertDialog.BUTTON_POSITIVE)
                     button.setOnClickListener {
-                        if (input.text.toString().isNotBlank() && input.text.toString() != filenameTemplate) {
+                        if (input.text.toString()
+                                .isNotBlank() && input.text.toString() != filenameTemplate
+                        ) {
                             filenameTemplate = input.text.toString()
                             templateEditTextString = null
                             photoCounter = 0
                             cameraUiBinding?.counterTextView?.text =
                                 getString(R.string.counter_text, photoCounter)
                             dismiss()
-                        } else if(input.text.toString().isBlank()) {
+                        } else if (input.text.toString().isBlank()) {
                             Toast.makeText(
                                 requireContext(),
                                 R.string.empty_template_message,
@@ -399,6 +405,9 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         private const val TEMPLATE_KEY = "template"
         private const val IS_EDITING_KEY = "is_editing"
         private const val TEMPLATE_EDIT_TEXT_KEY = "template_edit_text"
+
+        val EXTENSION_WHITELIST = arrayOf("JPG")
+
 
 
         private fun createFile(

@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_cameraFragment_to_galleryFragment"
             app:destination="@id/galleryFragment" />
+        <action
+            android:id="@+id/action_cameraFragment_to_permissionFragment"
+            app:destination="@id/permissionFragment" />
     </fragment>
     <fragment
         android:id="@+id/galleryFragment"

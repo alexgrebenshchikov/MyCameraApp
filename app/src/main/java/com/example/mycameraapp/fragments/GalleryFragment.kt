@@ -16,10 +16,11 @@ import com.example.mycameraapp.databinding.FragmentGalleryBinding
 import java.io.File
 import java.util.*
 
-val EXTENSION_WHITELIST = arrayOf("JPG")
 
 class GalleryFragment : Fragment(R.layout.fragment_gallery) {
-
+    companion object {
+        val EXTENSION_WHITELIST = arrayOf("JPG")
+    }
 
     private val fragmentGalleryBinding by viewBinding(FragmentGalleryBinding::bind)
     private val viewModel: GalleryViewModel by viewModels()

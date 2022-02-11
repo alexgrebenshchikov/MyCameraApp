@@ -27,7 +27,7 @@ import com.bumptech.glide.Glide
 import java.io.File
 
 
-class PhotoFragment internal constructor() : Fragment() {
+class PhotoFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?) = ImageView(context)
