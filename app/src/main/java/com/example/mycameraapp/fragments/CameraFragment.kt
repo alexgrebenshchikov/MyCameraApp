@@ -93,6 +93,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         displayManager.registerDisplayListener(displayListener, null)
 
         windowManager = WindowManager(view.context)
@@ -162,10 +163,7 @@ class CameraFragment : Fragment(R.layout.fragment_camera) {
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        bindPreviewCapture()
-    }
+    
 
     private fun setGalleryThumbnail(uri: Uri) {
         cameraUiBinding?.photoViewButton?.let { photoViewButton ->
